@@ -1,0 +1,28 @@
+[project]
+name = "mind-tale"
+version = "0.1.0"
+description = "Reading APP for text-to-image generation using FusionBrain (Kandinsky)"
+authors = [
+    { name="Matthew Vishniakov", email="matveyv2004@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "fusionbrain-sdk-python>=0.1.0",
+    "pydantic>=2.8.0",
+    "httpx>=0.27.0",
+    "python-dotenv>=1.0.1",
+    "pillow>=10.4.0"
+]
+
+# [build-system]
+# requires = ["setuptools", "wheel"]
+# build-backend = "setuptools.build_meta"
+
+[tool.uvicorn]
+host = "0.0.0.0"
+port = 8000
+reload = true
