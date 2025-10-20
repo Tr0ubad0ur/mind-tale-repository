@@ -1,3 +1,2 @@
-::include{file=docs/en/index.md}
-
-::include{file=docs/ru/getting_started.md}
+[Лого](docs/en/index.md)
+[Начало работы](docs/ru/getting_started.md)
