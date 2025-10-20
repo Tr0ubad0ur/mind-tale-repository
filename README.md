@@ -7,7 +7,7 @@
     <p>
         <a href="https://t.me/Papajunn" target="_blank">Матвей Вишняков</a> <b>&middot;</b>
         <a href="https://t.me/lekichbh" target="_blank">Алексей Щелкунов</a> <b>&middot;</b>
-        <a href="https://t.me/n1ddy" target="_blank">Кирилл Трунин</a> <b>&middot;</b>
+        <a href="https://t.me/n1ddy" target="_blank">Кирилл Трунин</a>
     </p>
 </div>
 
