@@ -1,2 +1,16 @@
+# Python-generated files
+**/__pycache__/
+*.egg-info
+*.py[oc]
+*.py[cod]
+
+# Misс
 .env
-images
+.venv
+.vscode/
+!.vscode/extensions.json
+data
+.python-version
+
+# Logging
+logs
