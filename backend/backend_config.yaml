@@ -1,9 +1,20 @@
 qdrant:
   text_collection: "documents"
   image_collection: "images"
+  user_history_collection: "user_history"
   text_vector_size: 384
   image_vector_size: 512
   score_threshold: 0
+
+storage:
+  # Local storage folder for generated images (for coursework; later можно заменить на S3/MinIO)
+  images_dir: "data/generated_images"
+
+generation:
+  # If best match score in user history is below this threshold, we generate without reference
+  user_history_similarity_threshold: 0.82
+  # Retrieve at most top_k candidates from user history
+  user_history_top_k: 5
 
 data:
   data_folder: "data/test_data"

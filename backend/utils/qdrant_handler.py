@@ -1,9 +1,16 @@
 import logging
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, PointStruct, VectorParams
+from qdrant_client.models import (
+    Distance,
+    FieldCondition,
+    Filter,
+    MatchValue,
+    PointStruct,
+    VectorParams,
+)
 
 from backend.core.embeddings import image_embedding_from_path, text_embedding
 from backend.utils.config_handler import Config
@@ -79,13 +86,22 @@ class QdrantHandler:
         Args:
             points (List[Dict[str, Any]]): Список точек вида {"id": str, "vector": List[float], "payload": {...}}
         """
+        self.create_collection()
         self.client.upsert(
             collection_name=self.collection_name,
             points=[PointStruct(**p) for p in points],
         )
 
-    def search(self, query_vector: List[float]) -> List[Dict[str, Any]]:
-        """Поиск ближайших точек по вектору с дополнительной фильтрацией и параметрами.
+    def search(
+        self,
+        query_vector: List[float],
+        top_k: int = 5,
+        user_id: Optional[str] = None,
+        score_threshold: Optional[float] = None,
+        with_payload: bool = True,
+        auto_enrich: bool = False,
+    ) -> List[Dict[str, Any]]:
+        """Vector search.
 
         Args:
             query_vector (List[float]): Вектор запроса.
@@ -99,13 +115,33 @@ class QdrantHandler:
             List[Dict[str, Any]]: Список найденных точек с id, score и (опционально) payload.
         """
         self.create_collection()
-        self.enrich_with_data()
+        # auto_enrich is useful only for the static corpus collection ("documents")
+        if auto_enrich:
+            self.enrich_with_data()
+
+        query_filter = None
+        if user_id is not None:
+            query_filter = Filter(
+                must=[
+                    FieldCondition(
+                        key='user_id', match=MatchValue(value=user_id)
+                    )
+                ]
+            )
+
+        effective_threshold = (
+            Config.score_threshold
+            if score_threshold is None
+            else score_threshold
+        )
 
         hits = self.client.query_points(
             collection_name=self.collection_name,
             query=query_vector,
-            with_payload=True,
-            score_threshold=Config.score_threshold,
+            limit=top_k,
+            query_filter=query_filter,
+            with_payload=with_payload,
+            score_threshold=effective_threshold,
         ).points
 
         results = []

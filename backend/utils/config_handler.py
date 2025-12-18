@@ -13,9 +13,23 @@ class Config:
 
     qdrant_text_collection: str = _config['qdrant']['text_collection']
     qdrant_image_collection: str = _config['qdrant']['image_collection']
+    qdrant_user_history_collection: str = _config['qdrant'].get(
+        'user_history_collection', 'user_history'
+    )
     text_vector_size: int = _config['qdrant']['text_vector_size']
     image_vector_size: int = _config['qdrant']['image_vector_size']
     score_threshold: float = _config['qdrant']['score_threshold']
+
+    images_dir: str = _config.get('storage', {}).get(
+        'images_dir', 'data/generated_images'
+    )
+
+    user_history_similarity_threshold: float = _config.get(
+        'generation', {}
+    ).get('user_history_similarity_threshold', 0.82)
+    user_history_top_k: int = _config.get('generation', {}).get(
+        'user_history_top_k', 5
+    )
 
     data_folder: str = _config['data']['data_folder']
     chunk_size: int = _config['data']['chunk_size']

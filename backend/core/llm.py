@@ -2,9 +2,7 @@ import logging
 from typing import Any, Dict, List
 
 import requests
-import torch
 from PIL import Image
-from transformers import AutoModelForVision2Seq, AutoProcessor
 
 from backend.utils.config_handler import Config
 
@@ -23,6 +21,8 @@ class QwenVisionLLM:
 
     def __init__(self) -> None:
         """Initialize the Vision LLM, loading the model and processor."""
+        import torch
+        from transformers import AutoModelForVision2Seq, AutoProcessor
         logger.info('🔄 Loading {Config.llm_model_name}...')
         self.processor = AutoProcessor.from_pretrained(MODEL_NAME)
         self.model = AutoModelForVision2Seq.from_pretrained(
@@ -96,9 +96,6 @@ class QwenVisionLLM:
         return result
 
 
-qwen_llm = QwenVisionLLM()
-
-
 def get_llm_response(prompt, context=None, image=None) -> str:
     """Helper function to generate a response using the global QwenVisionLLM instance.
 
@@ -110,4 +107,11 @@ def get_llm_response(prompt, context=None, image=None) -> str:
     Returns:
         str: Generated text from the LLM.
     """
-    return qwen_llm.generate(prompt, context=context, image=image)
+    # Lazy-load model on first call to avoid heavy startup time
+    from functools import lru_cache
+
+    @lru_cache(maxsize=1)
+    def _get_model():
+        return QwenVisionLLM()
+
+    return _get_model().generate(prompt, context=context, image=image)

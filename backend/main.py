@@ -2,6 +2,7 @@ import logging
 from typing import Dict
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from backend.api.endpoints import router
 from backend.utils.log_config import setup_logging
@@ -11,6 +12,9 @@ logger = logging.getLogger(__name__)
 
 
 app = FastAPI(title='Multimodal RAG Backend', version='0.1')
+
+# Serve generated images from a local folder (coursework setup)
+app.mount("/static", StaticFiles(directory="data"), name="static")
 
 app.include_router(router)
 
