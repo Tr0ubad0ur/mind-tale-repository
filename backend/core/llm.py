@@ -23,6 +23,7 @@ class QwenVisionLLM:
         """Initialize the Vision LLM, loading the model and processor."""
         import torch
         from transformers import AutoModelForVision2Seq, AutoProcessor
+
         logger.info('🔄 Loading {Config.llm_model_name}...')
         self.processor = AutoProcessor.from_pretrained(MODEL_NAME)
         self.model = AutoModelForVision2Seq.from_pretrained(

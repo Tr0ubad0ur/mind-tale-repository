@@ -2,7 +2,6 @@ from functools import lru_cache
 from typing import List
 
 from PIL import Image
-from sentence_transformers import SentenceTransformer
 
 
 @lru_cache(maxsize=1)
@@ -11,7 +10,7 @@ def _get_text_model():
         from sentence_transformers import SentenceTransformer
     except ModuleNotFoundError as e:
         raise ModuleNotFoundError(
-            "sentence-transformers is not installed. Install it with: pip install sentence-transformers"
+            'sentence-transformers is not installed. Install it with: pip install sentence-transformers'
         ) from e
     return SentenceTransformer('all-MiniLM-L6-v2')
 
@@ -30,7 +29,9 @@ def text_embedding(text: str) -> list[float]:
         - Ensure the model used for text embeddings is compatible with your retrieval pipeline.
     """
     model = _get_text_model()
-    vector = model.encode(text).tolist()  # преобразуем в список float для Qdrant
+    vector = model.encode(
+        text
+    ).tolist()  # преобразуем в список float для Qdrant
     return vector
 
 
@@ -40,7 +41,7 @@ def _get_clip_model():
         from sentence_transformers import SentenceTransformer
     except ModuleNotFoundError as e:
         raise ModuleNotFoundError(
-            "sentence-transformers is not installed. Install it with: pip install sentence-transformers"
+            'sentence-transformers is not installed. Install it with: pip install sentence-transformers'
         ) from e
     return SentenceTransformer('clip-ViT-B-32')
 

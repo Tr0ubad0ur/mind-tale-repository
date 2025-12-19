@@ -3,12 +3,13 @@ from typing import Optional
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from backend.core.multimodal_rag import LocalRAG
 from backend.core.image_style_rag import ImageStyleRAG
+from backend.core.multimodal_rag import LocalRAG
 
 router = APIRouter()
 rag = LocalRAG()
 image_rag = ImageStyleRAG()
+
 
 class QueryRequest(BaseModel):
     """Schema for user query requests.
@@ -39,9 +40,18 @@ def ask_mixed(request: QueryRequest) -> dict:
     )
     return result
 
+
 class ImageGenerateRequest(BaseModel):
+    """Schema for user query requests.
+
+    Attributes:
+        user_id (str): The text query from the user.
+        prompt (int, optional): Number of top documents to retrieve from RAG. Defaults to 5.
+    """
+
     user_id: str
     prompt: str
+
 
 @router.post('/generate_image')
 def generate_image(request: ImageGenerateRequest) -> dict:
@@ -55,17 +65,17 @@ def generate_image(request: ImageGenerateRequest) -> dict:
 
     # Convert local filesystem path to a URL under /static
     # Example saved path: data/generated_images/<file>.png
-    img_path = result.get("image_path", "")
-    if img_path.startswith("data/"):
-        result["image_url"] = "/static/" + img_path[len("data/"):]
+    img_path = result.get('image_path', '')
+    if img_path.startswith('data/'):
+        result['image_url'] = '/static/' + img_path[len('data/') :]
     else:
-        result["image_url"] = img_path
+        result['image_url'] = img_path
 
-    ref = result.get("reference")
+    ref = result.get('reference')
     if isinstance(ref, dict):
-        ref_path = ref.get("image_path", "")
-        if isinstance(ref_path, str) and ref_path.startswith("data/"):
-            ref["image_url"] = "/static/" + ref_path[len("data/"):]
+        ref_path = ref.get('image_path', '')
+        if isinstance(ref_path, str) and ref_path.startswith('data/'):
+            ref['image_url'] = '/static/' + ref_path[len('data/') :]
     return result
 
 

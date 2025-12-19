@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI(title='Multimodal RAG Backend', version='0.1')
 
 # Serve generated images from a local folder (coursework setup)
-app.mount("/static", StaticFiles(directory="data"), name="static")
+app.mount('/static', StaticFiles(directory='data'), name='static')
 
 app.include_router(router)
 

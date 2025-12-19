@@ -18,22 +18,27 @@ class LocalImageStorage:
     """
 
     def __init__(self, images_dir: Optional[str] = None) -> None:
+        """Создаёт хранилище изображений.
+
+        Args:
+            images_dir: Директория для сохранения изображений. Если None — берётся из конфигурации.
+        """
         self.images_dir = Path(images_dir or Config.images_dir)
         self.images_dir.mkdir(parents=True, exist_ok=True)
 
-    def _name_for(self, content: bytes, ext: str = "png") -> str:
+    def _name_for(self, content: bytes, ext: str = 'png') -> str:
         sha = hashlib.sha256(content).hexdigest()
-        return f"{sha[:32]}.{ext}"
+        return f'{sha[:32]}.{ext}'
 
     def save_png(self, img: Image.Image) -> str:
         """Save an image as PNG and return the relative path."""
         from io import BytesIO
 
         buff = BytesIO()
-        img.save(buff, format="PNG")
+        img.save(buff, format='PNG')
         data = buff.getvalue()
 
-        filename = self._name_for(data, ext="png")
+        filename = self._name_for(data, ext='png')
         path = self.images_dir / filename
         path.write_bytes(data)
 
@@ -41,4 +46,12 @@ class LocalImageStorage:
         return str(path)
 
     def load(self, path: str) -> Image.Image:
-        return Image.open(path).convert("RGB")
+        """Загружает изображение из файла.
+
+        Args:
+            path: Путь к файлу изображения.
+
+        Returns:
+            PIL.Image в режиме RGB.
+        """
+        return Image.open(path).convert('RGB')

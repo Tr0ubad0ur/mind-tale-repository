@@ -58,8 +58,12 @@ uv venv
 # Установка pre-commit хуков
 uv run pre-commit install
 
-# Установка зависимостей из requirements.txt
-uv pip install -r requirements.txt
+# Установка зависимостей
+uv sync
+
+# Форматирование кода
+uv run pre-commit run --all-files
+
 ```
 
 ## 4 Использовать Swagger UI для теста
