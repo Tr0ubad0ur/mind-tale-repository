@@ -1,6 +1,6 @@
 import uuid
 from dataclasses import dataclass
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional
 
 from PIL import Image
 
@@ -38,8 +38,8 @@ class ImageStyleRAG:
 
     def __init__(
         self,
-        qdrant_url: str = 'localhost:6333',
-        image_size: Tuple[int, int] = (768, 768),
+        qdrant_url: str = Config.qdrant_url,
+        image_size: int = Config.generation_image_size,
     ) -> None:
         """Инициализирует сервис image-RAG.
 
@@ -53,7 +53,8 @@ class ImageStyleRAG:
             vector_size=Config.text_vector_size,
         )
         self.storage = LocalImageStorage(Config.images_dir)
-        self.generator = SD15Generator(size=image_size)
+        self.generator = SD15Generator()
+        self.image_size = image_size
 
     def _retrieve_reference(
         self, user_id: str, prompt: str
@@ -101,17 +102,13 @@ class ImageStyleRAG:
             try:
                 reference_image = self.storage.load(ref.image_path)
                 used_reference = True
-                # map similarity -> reference strength (0.3..0.9)
-                # You can tune this later.
-                reference_strength = max(
-                    0.3,
-                    min(
-                        0.9,
-                        (ref.score - Config.user_history_similarity_threshold)
-                        / 0.2
-                        + 0.3,
-                    ),
-                )
+                # map similarity -> img2img strength.
+                # Higher similarity => lower strength (preserve style/composition more).
+                thr = Config.user_history_similarity_threshold
+                # normalize score to 0..1 above threshold
+                t = (ref.score - thr) / max(1e-6, (1.0 - thr))
+                # strength in [0.45..0.75]
+                reference_strength = max(0.45, min(0.75, 0.75 - 0.30 * t))
             except Exception:
                 reference_image = None
                 used_reference = False
@@ -119,8 +116,8 @@ class ImageStyleRAG:
         img = self.generator.generate(
             prompt=prompt,
             reference_image=reference_image,
-            size=512,
-            reference_strength=reference_strength if used_reference else 0.0,
+            size=self.image_size,
+            strength=reference_strength if used_reference else 0.65,
         )
 
         image_path = self.storage.save_png(img)

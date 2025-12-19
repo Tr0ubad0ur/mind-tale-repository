@@ -11,6 +11,9 @@ with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
 class Config:
     """Application settings loaded from backend_config.yaml."""
 
+    qdrant_url: str = _config.get('qdrant', {}).get(
+        'url', 'http://localhost:6333'
+    )
     qdrant_text_collection: str = _config['qdrant']['text_collection']
     qdrant_image_collection: str = _config['qdrant']['image_collection']
     qdrant_user_history_collection: str = _config['qdrant'].get(
@@ -29,6 +32,10 @@ class Config:
     ).get('user_history_similarity_threshold', 0.82)
     user_history_top_k: int = _config.get('generation', {}).get(
         'user_history_top_k', 5
+    )
+
+    generation_image_size: int = _config.get('generation', {}).get(
+        'image_size', 512
     )
 
     data_folder: str = _config['data']['data_folder']

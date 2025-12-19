@@ -5,24 +5,29 @@ qdrant:
   text_vector_size: 384
   image_vector_size: 512
   score_threshold: 0
+  url: http://localhost:6333
 
 storage:
-  # Local storage folder for generated images (for coursework; later можно заменить на S3/MinIO)
   images_dir: "data/generated_images"
 
 generation:
-  # If best match score in user history is below this threshold, we generate without reference
-  user_history_similarity_threshold: 0.82
-  # Retrieve at most top_k candidates from user history
+  user_history_similarity_threshold: 0.65
   user_history_top_k: 5
+  image_size: 512
 
 data:
   data_folder: "data/test_data"
   chunk_size: 500
   chunk_overlap: 50
-  supported_text_extensions: [".txt", ".md"]
-  supported_pdf_extensions: [".pdf"]
-  supported_image_extensions: [".jpg", ".jpeg", ".png"]
+  supported_text_extensions:
+  - .txt
+  - .md
+  supported_pdf_extensions:
+  - .pdf
+  supported_image_extensions:
+  - .jpg
+  - .jpeg
+  - .png
 
 llm:
   model_name: "Qwen/Qwen2-VL-2B-Instruct"
